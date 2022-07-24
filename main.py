@@ -37,11 +37,11 @@ for word in words:
 
     # Create a set to avoid double counting repeating characters
     unique = "".join(set(word))
-
+    
     for letter in unique:
         scores[word] += letters[letter]
 
-# Sort letters in descending order from most used to least used
+# Sort scores in descending order from most used to least used
 sortedScores = dict(sorted(scores.items(), key=lambda item: item[1], reverse=True))
 
 # See the top 50 scoring words
