@@ -1,3 +1,4 @@
+from operator import indexOf
 import string
 
 # Dictionary of words courtesy: https://github.com/dwyl/english-words
@@ -10,13 +11,11 @@ for word in textfile:
     word = word.rstrip("\n")
     words.append(word)
 
-# Initialize a dictionary with every letter of the alphabet, set their values to zero, then create an array of letters to be used for guesses
+# Initialize a dictionary with every letter of the alphabet, set their values to zero
 alphabet = list(string.ascii_lowercase)
-remainingLetters = []
 letters = {}
 for letter in alphabet:
     letters[letter] = 0
-    remainingLetters.append(letter)
 
 # Count the occurrence of every letter in the alphabet among the list of 5 letter words, and count the total number of letters
 totalLetters = 0
@@ -31,24 +30,68 @@ for key, value in letters.items():
 
 # Give score to word based on percentage
 scores = {}
-
 for word in words:
     scores[word] = 0
 
     # Create a set to avoid double counting repeating characters
     unique = "".join(set(word))
-    
     for letter in unique:
         scores[word] += letters[letter]
 
-# Sort scores in descending order from most used to least used
+
+# Only guess words that meet certain conditions
+grayLetters = ""
+
+# Figure out a case for yellow that accounts for a letter being guessed wrong in certain positions a couple of times
+yellowLetters = ["", "", "", "", ""]
+greenLetters = ["", "", "", "", ""]
+
+# Gray letters
+for key in list(scores.keys()):
+    for letter in grayLetters:
+        if letter in key:
+            del scores[key]
+            break
+
+# Green letters
+for key in list(scores.keys()):
+
+    # Loop through letters in the green array
+    for letter in greenLetters:
+
+        # if a letter exists
+        if letter:
+
+            # store the index of that letter
+            index = greenLetters.index(letter)
+
+            # if the letter isn't equal to the equivalent position in the key, remove that key
+            if letter != key[index]:
+                del scores[key]
+                break
+
+
+# Yellow letters
+for key in list(scores.keys()):
+
+    # Go through each letter in yellow array
+    for letter in yellowLetters:
+
+        # If a letter exists
+        if letter:
+
+            # Grab its index
+            index = yellowLetters.index(letter)
+
+            # If the letter exists in key, but NOT at key[index], continue, else delete that item
+            if letter in key and letter != key[index]:
+                continue
+            else:
+                del scores[key]
+
+        else:
+            break
+
 sortedScores = dict(sorted(scores.items(), key=lambda item: item[1], reverse=True))
-
-# See the top 50 scoring words
-top = list(sortedScores.items())[:50]
+top = list(sortedScores.items())[:30]
 print(top)
-
-
-# Randomly use one of the highest scoring words as first word
-# Find way to interact with page to know if correct letters selected
-# Adjust 5 letter word dictionary and repeat
